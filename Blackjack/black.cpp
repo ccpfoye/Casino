@@ -1,6 +1,20 @@
 /*
         Blackjack!
         A programming exercise by Clay Foye
+*/
+
+/* TODO's
+- Betting!
+- Cheat modes
+    - Card Counting?
+        - Programmatic 
+        - Using that method of the table
+    - Edge identifying?
+- Save States
+    - Money amounts
+    - progression
+
+
 
 */
 
@@ -10,17 +24,14 @@
 #include <iostream>
 using namespace std;
 
-// Static Variables
+// Defs
 #define N 52
 #define hand_size 22
 
 // Recursive to find a valid card
 int draw_card_helper(bitset<N> deck, int randint)
 {
-    if (deck[randint] == 0)
-    {
-        return randint;
-    }
+    if (deck[randint] == 0) { return randint; }
     else
     {
         int value = (randint + 1) % N;
@@ -28,7 +39,7 @@ int draw_card_helper(bitset<N> deck, int randint)
     }
 }
 
-// Get card from deck
+/* Search through the deck for a valid card index, and return the index*/
 int draw_card(bitset<N> deck, int randint)
 {
     return draw_card_helper(deck, randint);
@@ -37,44 +48,29 @@ int draw_card(bitset<N> deck, int randint)
 // Get the suit name!
 string get_card_suit(int card_index)
 {
-    // Hearts
-    if (card_index < 13)
-    {
-        return "Hearts";
-    }
-    // Diamonds
-    if (card_index < 26)
-    {
-        return "Diamonds";
-    }
-    if (card_index < 39)
-    {
-        return "Spades";
-    }
+    if (card_index < 13){ return "Hearts"; }   
+    if (card_index < 26) { return "Diamonds"; }
+    if (card_index < 39) { return "Spades"; }
     return "Clubs";
 }
 
+// Get the value of a card:
+//TODO: Make clamp card value an option inside get_value using a bool
 int get_card_value(int card_index)
 {
     int card_value = (card_index % 13) + 2;
-    // cap face cards;
-
     return card_value;
 }
 
+/* Cap Face Cards */
 int clamp_card_value(int card_value)
 {
-    if (card_value > 10 && card_value < 14)
-    {
-        card_value = 10;
-    }
-    if (card_value == 14)
-    {
-        card_value = 11;
-    }
+    if (card_value > 10 && card_value < 14) { card_value = 10; }
+    if (card_value == 14) { card_value = 11; }
     return card_value;
 }
 
+/* Get the name of a card given an index in the deck! */
 string get_card_name(int card_index)
 {
     string name;                                 // to store name
@@ -98,28 +94,6 @@ string get_card_name(int card_index)
         name = to_string(card_value) + " of ";
         break;
     }
-
-    // if (card_value == 14) // check if Ace
-    // {
-    //     name = "Ace of ";
-    // }
-    // else if (card_value == 13)
-    // {
-    //     name = "King of ";
-    // }
-    // else if (card_value == 12)
-    // {
-    //     name = "Queen of ";
-    // }
-    // else if (card_value == 11)
-    // {
-    //     name = "Jack of ";
-    // }
-    // else
-    // {
-    //     name = to_string(card_value) + " of ";
-    // }
-
     name = name + suit; // concatenate the number and suit
     return name;        // return card name
 }
@@ -132,44 +106,6 @@ int main(int argc, char const *argv[])
 
     // reseed!
     srand(time(NULL));
-
-    // Get a random deck index
-
-    /* DEBUG */
-    /*
-    // main execution loop
-    while (true)
-    {
-        // check for a play again:
-
-
-        while (i < 52)
-        {
-
-            // cout << "randint got!"
-            //      << "\n";
-            // cout << (randint);
-
-            // Draw a card
-            card_index = draw_card(deck, randint);
-            // cout << "card index found!"
-            //      << "\n";
-
-            // change the deck value
-            deck[card_index] = 1;
-
-            // Get the card name!
-            card_name = get_card_name(card_index);
-
-            cout << card_name << '\n';
-            randint = rand() % 51;
-            i++;
-        }
-        i = 0;
-        cout << deck << "\n";
-        deck.reset(); // reshuffle the deck!
-    }
-    */
 
     int randint = rand() % 52;
     int card_index = 0;
@@ -263,8 +199,7 @@ int main(int argc, char const *argv[])
             continue;
         }
 
-        cout << "Hit? (y/n)\n"
-             << "|-------|\n";
+        cout << "Hit? (y/n)\n" << "|-------|\n";
         getline(cin, answer);
 
         while (!answer.compare("y"))
@@ -318,8 +253,7 @@ int main(int argc, char const *argv[])
                 }
             }
 
-            cout << "Hit? (y/n)\n"
-                 << "|-------|\n";
+            cout << "Hit? (y/n)\n" << "|-------|\n";
             getline(cin, answer);
         }
 
@@ -359,24 +293,11 @@ int main(int argc, char const *argv[])
                 cout << "Dealer shows: " << dealer_sum << "\n";
             }
 
-            // Check for aces
-
-            // check for under/over 21
-
+            
             // compare against player score
-
-            if (player_sum > dealer_sum || dealer_sum > 21)
-            {
-                cout << "You win!\n";
-            }
-            else if (dealer_sum == player_sum)
-            {
-                cout << "Push!\n";
-            }
-            else
-            {
-                cout << "You lose!\n";
-            }
+            if (player_sum > dealer_sum || dealer_sum > 21) { cout << "You win!\n"; }
+            else if (dealer_sum == player_sum) { cout << "Push!\n"; }
+            else { cout << "You lose!\n"; }
         }
     }
 
