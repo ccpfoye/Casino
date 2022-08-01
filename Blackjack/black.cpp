@@ -4,6 +4,12 @@
 */
 
 /* TODO's
+
+BUGS:
+- It currently quits when you enter unexpected input during hitting/standing
+
+FEATURES:
+- Splitting
 - Betting!
 - Cheat modes
     - Card Counting?
@@ -13,9 +19,6 @@
 - Save States
     - Money amounts
     - progression
-
-
-
 */
 
 // Includes:
@@ -54,28 +57,26 @@ string get_card_suit(int card_index)
     return "Clubs";
 }
 
-// Get the value of a card:
-//TODO: Make clamp card value an option inside get_value using a bool
-int get_card_value(int card_index)
+/*Get the value of a card
+card_index: an integer representing the index of the card in the deck
+do_clamp: whether or not to clamp Ace and facecard values to 11 and 10 */
+int get_card_value(int card_index, bool do_clamp)
 {
     int card_value = (card_index % 13) + 2;
+    if (do_clamp) {
+        if (card_value > 10 && card_value < 14) { card_value = 10; }
+        if (card_value == 14) { card_value = 11; }
+    }
     return card_value;
 }
 
-/* Cap Face Cards */
-int clamp_card_value(int card_value)
-{
-    if (card_value > 10 && card_value < 14) { card_value = 10; }
-    if (card_value == 14) { card_value = 11; }
-    return card_value;
-}
 
 /* Get the name of a card given an index in the deck! */
 string get_card_name(int card_index)
 {
     string name;                                 // to store name
     string suit = get_card_suit(card_index);     // get the suit
-    int card_value = get_card_value(card_index); // convert from index to value
+    int card_value = get_card_value(card_index, false); // convert from index to value
     switch (card_value)
     {
     case 14:
@@ -159,14 +160,14 @@ int main(int argc, char const *argv[])
         // Draw for dealer!
         cout << "Dealer draws:\n";
         card_index = draw_card(deck, randint);
-        dealer_cards[0] = clamp_card_value(get_card_value(card_index));
+        dealer_cards[0] = get_card_value(card_index, true);
         cout << get_card_name(card_index) << "\n";
         deck[card_index] = 1;
 
         randint = rand() % 51;
 
         card_index = draw_card(deck, randint);
-        dealer_cards[1] = clamp_card_value(get_card_value(card_index));
+        dealer_cards[1] = get_card_value(card_index, true);
         hidden_dealer_card = get_card_name(card_index);
         cout << "Dealer draws hidden card.\n";
         deck[card_index] = 1;
@@ -176,13 +177,13 @@ int main(int argc, char const *argv[])
 
         randint = rand() % 51;
         card_index = draw_card(deck, randint);
-        player_cards[0] = clamp_card_value(get_card_value(card_index));
+        player_cards[0] = get_card_value(card_index, true);
         cout << get_card_name(card_index) << "\n";
         deck[card_index] = 1;
 
         randint = rand() % 51;
         card_index = draw_card(deck, randint);
-        player_cards[1] = clamp_card_value(get_card_value(card_index));
+        player_cards[1] = get_card_value(card_index, true);
         cout << get_card_name(card_index) << "\n";
         deck[card_index] = 1;
 
@@ -206,7 +207,7 @@ int main(int argc, char const *argv[])
         {
             randint = rand() % 51;
             card_index = draw_card(deck, randint);
-            player_cards[player_index] = clamp_card_value(get_card_value(card_index));
+            player_cards[player_index] = get_card_value(card_index, true);
             player_index++;
             cout << "You draw: " << get_card_name(card_index) << "\n";
             player_sum = accumulate(player_cards.begin(), player_cards.end(), 0);
@@ -269,7 +270,7 @@ int main(int argc, char const *argv[])
             {
                 randint = rand() % 51;
                 card_index = draw_card(deck, randint);
-                dealer_cards[dealer_index] = clamp_card_value(get_card_value(card_index));
+                dealer_cards[dealer_index] = get_card_value(card_index, true);
                 card_name = get_card_name(card_index);
                 cout << "Dealer draws: " << card_name << "\n";
                 dealer_sum = accumulate(dealer_cards.begin(), dealer_cards.end(), 0);
